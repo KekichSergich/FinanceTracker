@@ -67,8 +67,8 @@ Finance Tracker allows users to easily track income and expenses, categorize tra
 
 ### Run the application
 ```bash
-git clone https://github.com/your-username/finance-tracker.git
-cd finance-tracker
+git clone https://github.com/KekichSergich/FinanceTracker.git
+cd FinanceTracker
 ./gradlew run
 ```
 
