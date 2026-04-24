@@ -16,29 +16,29 @@ public class TransactionService {
     }
 
     public void addTransaction(Transaction transaction) {
-        // TODO
+        if (transaction.getAmount() > 0){
+            transactionRepository.save(transaction);
+        }
+        else { throw new IllegalArgumentException("Transaction amount cannot be 0"); }
     }
 
     public void updateTransaction(Transaction transaction) {
-        // TODO
+        transactionRepository.update(transaction);
     }
 
     public void deleteTransaction(Long id) {
-        // TODO
+        transactionRepository.deleteById(id);
     }
 
     public List<Transaction> getAllTransactions() {
-        // TODO
-        return null;
+        return transactionRepository.findAll();
     }
 
     public List<Transaction> getTransactionsByCategory(Category category) {
-        // TODO
-        return null;
+        return transactionRepository.findByCategory(category);
     }
 
     public List<Transaction> getTransactionsByDateRange(LocalDate from, LocalDate to) {
-        // TODO
-        return null;
+        return transactionRepository.findByDateRange(from, to);
     }
 }

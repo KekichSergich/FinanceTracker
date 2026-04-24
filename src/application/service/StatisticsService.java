@@ -1,10 +1,12 @@
 package application.service;
 
 import domain.model.Category;
+import domain.model.Transaction;
 import domain.repository.TransactionRepository;
 
 import java.time.YearMonth;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class StatisticsService {
 
@@ -15,27 +17,38 @@ public class StatisticsService {
     }
 
     public double getTotalIncome() {
-        // TODO
-        return 0;
+        return transactionRepository.findAll().stream()
+                .filter(Transaction::isIncome)
+                .mapToDouble(Transaction::getAmount)
+                .sum();
     }
 
     public double getTotalExpense() {
-        // TODO
-        return 0;
+        return transactionRepository.findAll().stream()
+                .filter(Transaction::isExpense)
+                .mapToDouble(Transaction::getAmount)
+                .sum();
     }
 
     public double getBalance() {
-        // TODO
-        return 0;
+        return getTotalIncome() - getTotalExpense();
     }
 
     public Map<Category, Double> getExpensesByCategory() {
-        // TODO
-        return null;
+        return transactionRepository.findAll().stream()
+                .filter(Transaction::isExpense)
+                .collect(Collectors.groupingBy(
+                        Transaction::getCategory,
+                        Collectors.summingDouble(Transaction::getAmount)
+                ));
     }
 
     public Map<YearMonth, Double> getExpensesByMonth() {
-        // TODO
-        return null;
+        return transactionRepository.findAll().stream()
+                .filter(Transaction::isExpense)
+                .collect(Collectors.groupingBy(
+                        t -> YearMonth.from(t.getDate()),
+                        Collectors.summingDouble(Transaction::getAmount)
+                ));
     }
 }
