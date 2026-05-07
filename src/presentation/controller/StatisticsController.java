@@ -15,22 +15,18 @@ public class StatisticsController {
     }
 
     public Map<Category, Double> getExpensesByCategory() {
-        // TODO
-        return null;
+        return statisticsService.getExpensesByCategory();
     }
 
     public Map<YearMonth, Double> getExpensesByMonth() {
-        // TODO
-        return null;
+        return  statisticsService.getExpensesByMonth();
     }
 
     public double getTotalIncome() {
-        // TODO
-        return 0;
+        return statisticsService.getTotalIncome();
     }
 
     public double getTotalExpense() {
-        // TODO
-        return 0;
+        return statisticsService.getTotalExpense();
     }
 }

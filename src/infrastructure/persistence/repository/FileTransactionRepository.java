@@ -1,7 +1,5 @@
 package infrastructure.persistence.repository;
 
-import application.service.StatisticsService;
-import application.service.TransactionService;
 import domain.model.Category;
 import domain.model.Transaction;
 import domain.model.TransactionType;
@@ -105,6 +103,11 @@ public class FileTransactionRepository implements TransactionRepository {
     @Override
     public void save(Transaction transaction) {
         List<Transaction> transactions = readAll();
+        long newId = transactions.stream()
+                .mapToLong(Transaction::getId)
+                .max()
+                .orElse(0L) + 1;
+        transaction.setId(newId);
         transactions.add(transaction);
         writeAll(transactions);
     }

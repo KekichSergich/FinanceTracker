@@ -18,22 +18,18 @@ public class MainController {
     }
 
     public double getCurrentBalance() {
-        // TODO
-        return 0;
+        return statisticsService.getBalance();
     }
 
     public double getTotalIncome() {
-        // TODO
-        return 0;
+        return statisticsService.getTotalIncome();
     }
 
     public double getTotalExpense() {
-        // TODO
-        return 0;
+        return statisticsService.getTotalExpense();
     }
 
     public Map<Category, Double> getExpensesByCategory() {
-        // TODO
-        return null;
+        return  statisticsService.getExpensesByCategory();
     }
 }
