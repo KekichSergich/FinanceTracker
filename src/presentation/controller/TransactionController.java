@@ -33,8 +33,8 @@ public class TransactionController {
             TransactionDto dto = new TransactionDto();
             dto.setId(transaction.getId());
             dto.setAmount(String.valueOf(transaction.getAmount()));
-            dto.setType(transaction.getType().name());
-            dto.setCategory(transaction.getCategory().name());
+            dto.setType(transaction.getType() != null ? transaction.getType().name() : "");
+            dto.setCategory(transaction.getCategory() != null ? transaction.getCategory().name() : "");
             dto.setDate(transaction.getDate().toString());
             dto.setNote(transaction.getNote());
             dtos.add(dto);

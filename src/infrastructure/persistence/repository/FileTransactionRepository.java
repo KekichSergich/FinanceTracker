@@ -44,6 +44,7 @@ public class FileTransactionRepository implements TransactionRepository {
         LocalDate date = null; String note = "";
 
         for (String part : parts) {
+            if (part.trim().isEmpty()) continue;
             String[] kv = part.split(":", 2);
             String key   = kv[0].trim().replaceAll("\"", "");
             String value = kv[1].trim().replaceAll("\"", "");
@@ -73,7 +74,7 @@ public class FileTransactionRepository implements TransactionRepository {
                 if (c == '{') depth++;
                 if (c == '}') depth--;
                 obj.append(c);
-                if (depth == 0 && !obj.toString().isBlank()) {
+                if (depth == 0 && obj.toString().contains("{")) {
                     result.add(fromJson(obj.toString()));
                     obj.setLength(0);
                 }
