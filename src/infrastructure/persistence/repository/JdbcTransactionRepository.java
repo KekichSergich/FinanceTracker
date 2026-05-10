@@ -59,4 +59,13 @@ public class JdbcTransactionRepository implements TransactionRepository {
         // TODO
         return List.of();
     }
+    @Override
+    public void deleteAll() {
+        // TODO
+    }
+
+    @Override
+    public void saveAll(List<Transaction> transactions) {
+        // TODO
+    }
 }

@@ -1,4 +1,4 @@
-package presentation.view.components;
+package presentation.view.components.mainview;
 
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;

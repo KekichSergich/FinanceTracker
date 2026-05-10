@@ -22,4 +22,8 @@ public interface TransactionRepository {
     List<Transaction> findByCategory(Category category);
 
     List<Transaction> findByDateRange(LocalDate from, LocalDate to);
+
+    void deleteAll();
+
+    void saveAll(List<Transaction> transactions);
 }

@@ -1,5 +1,6 @@
 package presentation.view;
 
+import application.service.DataService;          // НОВЫЙ импорт
 import application.service.StatisticsService;
 import application.service.TransactionService;
 import infrastructure.persistence.repository.FileTransactionRepository;
@@ -11,12 +12,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import presentation.controller.DataController;   // НОВЫЙ импорт
 import presentation.controller.MainController;
 import presentation.controller.StatisticsController;
 import presentation.controller.TransactionController;
-import presentation.view.components.DashboardPage;
-import presentation.view.components.NavTabs;
-import presentation.view.components.SummaryCard;
+import presentation.view.components.mainview.DashboardPage;
+import presentation.view.components.common.NavTabs;
+import presentation.view.components.common.SummaryCard;
+import presentation.view.pages.DataPage;          // НОВЫЙ импорт
 
 import java.nio.file.Path;
 
@@ -32,11 +35,13 @@ public class MainView extends Application {
         var repo = new FileTransactionRepository(Path.of("data/transactions.json"));
         var transactionService = new TransactionService(repo);
         var statisticsService = new StatisticsService(repo);
+        var dataService = new DataService(repo);                          // НОВАЯ строка
         transactionController = new TransactionController(transactionService);
         mainController = new MainController(transactionService, statisticsService);
         statisticsController = new StatisticsController(statisticsService);
+        var dataController = new DataController(dataService);             // НОВАЯ строка
 
-        // inner container — like max-width: 1300px; margin: 0 auto in CSS
+        // inner container
         VBox container = new VBox(0);
         container.setMaxWidth(1300);
         container.setStyle("-fx-background-color: #f5f5f5;");
@@ -64,7 +69,6 @@ public class MainView extends Application {
             expenseCard.refresh(String.format("$%.2f", mainController.getTotalExpense()));
         };
 
-
         HBox.setHgrow(balanceCard, Priority.ALWAYS);
         HBox.setHgrow(incomeCard,  Priority.ALWAYS);
         HBox.setHgrow(expenseCard, Priority.ALWAYS);
@@ -80,11 +84,19 @@ public class MainView extends Application {
         contentArea.setAlignment(Pos.TOP_LEFT);
         contentArea.getChildren().setAll(dashboardPage);
 
+        // НОВЫЙ блок: onImport обновляет карточки и пересоздаёт DashboardPage
+        Runnable onImport = () -> {                                                          // НОВАЯ строка
+            refreshCards.run();                                                              // НОВАЯ строка
+            contentArea.getChildren().setAll(                                                // НОВАЯ строка
+                    new DashboardPage(transactionController, mainController, refreshCards)       // НОВАЯ строка
+            );                                                                               // НОВАЯ строка
+        };                                                                                   // НОВАЯ строка
+
         NavTabs navTabs = new NavTabs(
                 () -> contentArea.getChildren().setAll(dashboardPage),
                 () -> contentArea.getChildren().setAll(new Label("Transactions — coming soon")),
                 () -> contentArea.getChildren().setAll(new Label("Analytics — coming soon")),
-                () -> contentArea.getChildren().setAll(new Label("Data — coming soon"))
+                () -> contentArea.getChildren().setAll(new DataPage(dataController, onImport)) // ИЗМЕНЕНА строка
         );
 
         HBox navWrapper = new HBox();
@@ -93,7 +105,7 @@ public class MainView extends Application {
 
         container.getChildren().addAll(title, cards, navWrapper, contentArea);
 
-        // outer wrapper — centers the container like margin: 0 auto
+        // outer wrapper
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: #f5f5f5;");
         root.setCenter(container);

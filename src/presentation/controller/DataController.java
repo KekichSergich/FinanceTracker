@@ -1,6 +1,9 @@
 package presentation.controller;
 
 import application.service.DataService;
+import domain.model.ImportMode;
+
+import java.util.List;
 
 public class DataController {
 
@@ -11,18 +14,10 @@ public class DataController {
     }
 
     public void exportToJson(String filePath) {
-        // TODO
+        dataService.exportToJson(filePath);
     }
 
-    public void importFromJson(String filePath) {
-        // TODO
-    }
-
-    public void exportToXml(String filePath) {
-        // TODO
-    }
-
-    public void importFromXml(String filePath) {
-        // TODO
+    public List<String> importFromJson(String filePath, ImportMode mode) {
+        return dataService.importFromJson(filePath, mode);
     }
 }

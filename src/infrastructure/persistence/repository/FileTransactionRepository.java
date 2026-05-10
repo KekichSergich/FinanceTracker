@@ -159,4 +159,24 @@ public class FileTransactionRepository implements TransactionRepository {
                 .filter(t -> !t.getDate().isBefore(from) && !t.getDate().isAfter(to))
                 .toList();
     }
+
+    @Override
+    public void deleteAll() {
+        writeAll(new  ArrayList<>());
+    }
+
+    @Override
+    public void saveAll(List<Transaction> transactions) {
+        List<Transaction> existing = readAll();
+        long maxId = existing.stream()
+                .mapToLong(Transaction::getId)
+                .max()
+                .orElse(0L);
+
+        for (Transaction t : transactions) {
+            t.setId(++maxId);
+            existing.add(t);
+        }
+        writeAll(existing);
+    }
 }

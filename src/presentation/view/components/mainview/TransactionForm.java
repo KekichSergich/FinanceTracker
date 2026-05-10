@@ -1,4 +1,4 @@
-package presentation.view.components;
+package presentation.view.components.mainview;
 
 import domain.model.Category;
 import domain.model.TransactionType;
