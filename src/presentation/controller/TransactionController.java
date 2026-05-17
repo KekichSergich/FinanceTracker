@@ -2,7 +2,6 @@ package presentation.controller;
 
 import application.service.TransactionService;
 import domain.model.Transaction;
-import infrastructure.persistence.mapper.TransactionMapper;
 import presentation.dto.TransactionDto;
 import presentation.dto.TransactionFormDto;
 
@@ -17,15 +16,25 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
+    /**
+     * Creates a Transaction from form data and passes it to the service.
+     */
     public void handleAddTransaction(TransactionFormDto dto) {
         Transaction transaction = new Transaction(null, dto.getAmount(), dto.getType(), dto.getCategory(), dto.getDate(), dto.getNote());
         transactionService.addTransaction(transaction);
     }
 
+    /**
+     * Deletes a transaction by its ID.
+     */
     public void handleDeleteTransaction(Long id) {
         transactionService.deleteTransaction(id);
     }
 
+    /**
+     * Returns all transactions mapped to DTOs for the presentation layer.
+     * Handles null type and category gracefully.
+     */
     public List<TransactionDto> getAllTransactions() {
         List<Transaction> transactions = transactionService.getAllTransactions();
         List<TransactionDto> dtos = new ArrayList<>();

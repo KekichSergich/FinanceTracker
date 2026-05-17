@@ -67,7 +67,6 @@ public class TransactionTable extends VBox {
                         if (bt == ButtonType.YES) {
                             transactionController.handleDeleteTransaction(dto.getId());
                             refresh();
-                            System.out.println("onDataChanged.run() вызван");
                             onDataChanged.run();
                         }
                     });

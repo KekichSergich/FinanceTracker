@@ -11,5 +11,4 @@ public class StatisticsDto {
     private Map<String, Double> expensesByCategory;
     private Map<String, Double> expensesByMonth;
 
-    // getters / setters
 }

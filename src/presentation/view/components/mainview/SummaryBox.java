@@ -16,6 +16,12 @@ public class SummaryBox extends VBox {
     private final MainController mainController;
     private final TransactionController transactionController;
 
+    /**
+     * Creates a summary box showing total expenses or income,
+     * with a category filter dropdown.
+     *
+     * @param isExpense true for expenses box, false for income box
+     */
     public SummaryBox(String title, String value, boolean isExpense,
                       MainController mainController,
                       TransactionController transactionController) {
@@ -40,6 +46,7 @@ public class SummaryBox extends VBox {
         String valueColor = isExpense ? "#e53935" : "#43a047";
         valueLabel.setStyle("-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: " + valueColor + ";");
 
+        // populate filter with all categories plus "All" option
         filterCombo = new ComboBox<>();
         filterCombo.getItems().add("All");
         for (Category c : Category.values()) {
@@ -59,6 +66,10 @@ public class SummaryBox extends VBox {
         this.getChildren().addAll(titleLabel, filterCombo, valueLabel);
     }
 
+    /**
+     * Recalculates and updates the displayed value based on selected filter.
+     * Shows total for all categories or filtered by specific category.
+     */
     private void updateValue() {
         String selected = filterCombo.getValue();
         double total;
@@ -79,6 +90,9 @@ public class SummaryBox extends VBox {
         valueLabel.setText(String.format("$%.2f", total));
     }
 
+    /**
+     * Refreshes the displayed value — called after data changes.
+     */
     public void refresh() {
         updateValue();
     }

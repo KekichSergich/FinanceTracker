@@ -9,8 +9,6 @@ public class TransactionDto {
     private String date;
     private String note;
 
-    // getters / setters
-
     public Long getId() {
         return id;
     }

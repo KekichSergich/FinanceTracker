@@ -17,19 +17,31 @@ public class MainController {
         this.statisticsService = statisticsService;
     }
 
+    /**
+     * Returns current balance (total income minus total expenses).
+     */
     public double getCurrentBalance() {
         return statisticsService.getBalance();
     }
 
+    /**
+     * Returns the sum of all income transactions.
+     */
     public double getTotalIncome() {
         return statisticsService.getTotalIncome();
     }
 
+    /**
+     * Returns the sum of all expense transactions.
+     */
     public double getTotalExpense() {
         return statisticsService.getTotalExpense();
     }
 
+    /**
+     * Returns a map of expense amounts grouped by category.
+     */
     public Map<Category, Double> getExpensesByCategory() {
-        return  statisticsService.getExpensesByCategory();
+        return statisticsService.getExpensesByCategory();
     }
 }

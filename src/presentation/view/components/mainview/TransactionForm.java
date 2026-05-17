@@ -16,6 +16,10 @@ public class TransactionForm extends VBox {
     private final TransactionController transactionController;
     private final Runnable onTransactionAdded;
 
+    /**
+     * Form for adding a new transaction.
+     * Calls onTransactionAdded callback after successful save.
+     */
     public TransactionForm(TransactionController transactionController, Runnable onTransactionAdded) {
         super(12);
         this.transactionController = transactionController;
@@ -53,6 +57,7 @@ public class TransactionForm extends VBox {
         amountField.setMaxWidth(Double.MAX_VALUE);
         amountField.setStyle(inputStyle);
 
+        // type and amount side by side, each taking 50% width
         VBox typeBox = new VBox(4, typeLabel, typeCombo);
         VBox amountBox = new VBox(4, amountLabel, amountField);
         HBox typeAndAmount = new HBox(12, typeBox, amountBox);
@@ -96,7 +101,7 @@ public class TransactionForm extends VBox {
             -fx-cursor: hand;
         """);
 
-        // onClick — save transaction and notify parent via callback
+        // collect form data, save transaction, notify parent, reset fields
         addBtn.setOnAction(e -> {
             try {
                 TransactionFormDto dto = new TransactionFormDto();
@@ -108,9 +113,10 @@ public class TransactionForm extends VBox {
 
                 transactionController.handleAddTransaction(dto);
 
-                // notify DashboardPage to refresh table — like props.onSave() in React
+                // notify DashboardPage to refresh — like props.onSave() in React
                 onTransactionAdded.run();
 
+                // reset fields after successful save
                 amountField.clear();
                 descField.clear();
                 categoryCombo.setValue(null);

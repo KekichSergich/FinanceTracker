@@ -20,6 +20,7 @@ import presentation.view.components.mainview.DashboardPage;
 import presentation.view.components.common.NavTabs;
 import presentation.view.components.common.SummaryCard;
 import presentation.view.pages.DataPage;          // НОВЫЙ импорт
+import presentation.view.pages.StatisticsView;
 
 import java.nio.file.Path;
 
@@ -35,11 +36,11 @@ public class MainView extends Application {
         var repo = new FileTransactionRepository(Path.of("data/transactions.json"));
         var transactionService = new TransactionService(repo);
         var statisticsService = new StatisticsService(repo);
-        var dataService = new DataService(repo);                          // НОВАЯ строка
+        var dataService = new DataService(repo);
         transactionController = new TransactionController(transactionService);
         mainController = new MainController(transactionService, statisticsService);
         statisticsController = new StatisticsController(statisticsService);
-        var dataController = new DataController(dataService);             // НОВАЯ строка
+        var dataController = new DataController(dataService);
 
         // inner container
         VBox container = new VBox(0);
@@ -84,19 +85,18 @@ public class MainView extends Application {
         contentArea.setAlignment(Pos.TOP_LEFT);
         contentArea.getChildren().setAll(dashboardPage);
 
-        // НОВЫЙ блок: onImport обновляет карточки и пересоздаёт DashboardPage
-        Runnable onImport = () -> {                                                          // НОВАЯ строка
-            refreshCards.run();                                                              // НОВАЯ строка
-            contentArea.getChildren().setAll(                                                // НОВАЯ строка
-                    new DashboardPage(transactionController, mainController, refreshCards)       // НОВАЯ строка
-            );                                                                               // НОВАЯ строка
-        };                                                                                   // НОВАЯ строка
+
+        Runnable onImport = () -> {
+            refreshCards.run();
+            contentArea.getChildren().setAll(
+                    new DashboardPage(transactionController, mainController, refreshCards)
+            );
+        };
 
         NavTabs navTabs = new NavTabs(
                 () -> contentArea.getChildren().setAll(dashboardPage),
-                () -> contentArea.getChildren().setAll(new Label("Transactions — coming soon")),
-                () -> contentArea.getChildren().setAll(new Label("Analytics — coming soon")),
-                () -> contentArea.getChildren().setAll(new DataPage(dataController, onImport)) // ИЗМЕНЕНА строка
+                () -> contentArea.getChildren().setAll(new StatisticsView(statisticsController)),
+                () -> contentArea.getChildren().setAll(new DataPage(dataController, onImport))
         );
 
         HBox navWrapper = new HBox();

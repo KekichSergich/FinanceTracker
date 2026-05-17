@@ -5,5 +5,6 @@ public enum Category {
     TRANSPORT,
     HOUSING,
     ENTERTAINMENT,
+    JOB,
     OTHER
 }
