@@ -11,13 +11,23 @@ import presentation.controller.DataController;
 import java.io.File;
 import java.util.List;
 
+/**
+ * JavaFX page responsible for data import and export operations.
+ * Allows the user to export transactions to JSON and import transactions from a JSON file.
+ */
 public class DataPage extends VBox {
 
+    /**
+     * Creates the data management page.
+     *
+     * @param dataController controller used for import and export operations
+     * @param onImport callback executed after successful data import
+     */
     public DataPage(DataController dataController, Runnable onImport) {
         super(20);
         this.setPadding(new Insets(20));
         this.setMaxWidth(Double.MAX_VALUE);
-        this.setMinHeight(600); // ← новая строка
+        this.setMinHeight(600);
 
         VBox card = new VBox(12);
         card.setStyle("""
@@ -62,14 +72,18 @@ public class DataPage extends VBox {
         buttons.setAlignment(Pos.CENTER_LEFT);
 
         exportBtn.setOnAction(e -> {
+            // Let the user choose where the exported JSON file should be saved.
             FileChooser fc = new FileChooser();
             fc.setTitle("Save JSON");
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
             fc.setInitialFileName("transactions.json");
+
             File file = fc.showSaveDialog(getScene().getWindow());
+
             if (file != null) {
                 try {
                     dataController.exportToJson(file.getAbsolutePath());
+
                     statusLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #43a047;");
                     statusLabel.setText("Exported successfully to: " + file.getName());
                 } catch (Exception ex) {
@@ -80,27 +94,44 @@ public class DataPage extends VBox {
         });
 
         importBtn.setOnAction(e -> {
+            // Let the user select a JSON file that should be imported.
             FileChooser fc = new FileChooser();
             fc.setTitle("Open JSON");
             fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON", "*.json"));
-            File file = fc.showOpenDialog(getScene().getWindow());
-            if (file == null) return;
 
+            File file = fc.showOpenDialog(getScene().getWindow());
+
+            if (file == null) {
+                return;
+            }
+
+            // Ask whether imported transactions should replace or extend existing data.
             Alert modeDialog = new Alert(Alert.AlertType.CONFIRMATION);
             modeDialog.setTitle("Import Mode");
             modeDialog.setHeaderText("How to import?");
             modeDialog.setContentText("Replace — delete all existing transactions.\nMerge — add imported to existing.");
+
             ButtonType replaceBtn = new ButtonType("Replace");
             ButtonType mergeBtn   = new ButtonType("Merge");
             ButtonType cancelBtn  = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
             modeDialog.getButtonTypes().setAll(replaceBtn, mergeBtn, cancelBtn);
 
             modeDialog.showAndWait().ifPresent(result -> {
-                if (result == cancelBtn) return;
-                ImportMode mode = result == replaceBtn ? ImportMode.REPLACE : ImportMode.MERGE;
+                if (result == cancelBtn) {
+                    return;
+                }
+
+                ImportMode mode = result == replaceBtn
+                        ? ImportMode.REPLACE
+                        : ImportMode.MERGE;
+
                 try {
                     List<String> skipped = dataController.importFromJson(file.getAbsolutePath(), mode);
+
+                    // Notify parent view that imported data may affect dashboard values and charts.
                     onImport.run();
+
                     if (skipped.isEmpty()) {
                         statusLabel.setStyle("-fx-font-size: 12; -fx-text-fill: #43a047;");
                         statusLabel.setText("Import successful.");

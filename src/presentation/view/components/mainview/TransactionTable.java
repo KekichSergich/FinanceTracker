@@ -6,12 +6,22 @@ import javafx.scene.layout.VBox;
 import presentation.controller.TransactionController;
 import presentation.dto.TransactionDto;
 
+/**
+ * JavaFX component that displays all transactions in a table.
+ * The table also provides row-level deletion and refreshes related UI data after changes.
+ */
 public class TransactionTable extends VBox {
 
     private final TableView<TransactionDto> table;
     private final TransactionController transactionController;
     private final Runnable onDataChanged;
 
+    /**
+     * Creates a transaction table component.
+     *
+     * @param transactionController controller used to load and delete transactions
+     * @param onDataChanged callback executed after transaction data is changed
+     */
     public TransactionTable(TransactionController transactionController, Runnable onDataChanged) {
         super(8);
         this.transactionController = transactionController;
@@ -31,21 +41,25 @@ public class TransactionTable extends VBox {
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         table.setPrefHeight(400);
 
+        // Define table columns matching fields from TransactionDto.
         TableColumn<TransactionDto, String> dateCol     = new TableColumn<>("Date");
         TableColumn<TransactionDto, String> typeCol     = new TableColumn<>("Type");
         TableColumn<TransactionDto, String> categoryCol = new TableColumn<>("Category");
         TableColumn<TransactionDto, String> amountCol   = new TableColumn<>("Amount");
         TableColumn<TransactionDto, String> noteCol     = new TableColumn<>("Note");
 
+        // Bind table columns to TransactionDto properties.
         dateCol.setCellValueFactory(new PropertyValueFactory<>("date"));
         typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
         categoryCol.setCellValueFactory(new PropertyValueFactory<>("category"));
         amountCol.setCellValueFactory(new PropertyValueFactory<>("amount"));
         noteCol.setCellValueFactory(new PropertyValueFactory<>("note"));
 
+        // Add an action column with a delete button for each transaction row.
         TableColumn<TransactionDto, Void> deleteCol = new TableColumn<>("");
         deleteCol.setMaxWidth(50);
         deleteCol.setMinWidth(50);
+
         deleteCol.setCellFactory(col -> new TableCell<>() {
             private final Button deleteBtn = new Button("🗑");
 
@@ -60,12 +74,17 @@ public class TransactionTable extends VBox {
                 """);
 
                 deleteBtn.setOnAction(e -> {
+                    // Get transaction assigned to the current table row.
                     TransactionDto dto = getTableView().getItems().get(getIndex());
+
                     Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
                             "Delete this transaction?", ButtonType.YES, ButtonType.NO);
+
                     confirm.showAndWait().ifPresent(bt -> {
                         if (bt == ButtonType.YES) {
                             transactionController.handleDeleteTransaction(dto.getId());
+
+                            // Refresh this table and notify parent components to update summaries/charts.
                             refresh();
                             onDataChanged.run();
                         }
@@ -76,6 +95,8 @@ public class TransactionTable extends VBox {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
+
+                // Hide the delete button for empty table rows.
                 setGraphic(empty ? null : deleteBtn);
                 setAlignment(javafx.geometry.Pos.CENTER);
             }
@@ -87,6 +108,9 @@ public class TransactionTable extends VBox {
         this.getChildren().addAll(tableTitle, table);
     }
 
+    /**
+     * Reloads transactions from the controller and updates the table content.
+     */
     public void refresh() {
         table.getItems().setAll(transactionController.getAllTransactions());
     }
