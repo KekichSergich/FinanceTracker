@@ -3,11 +3,15 @@ package presentation.view;
 import application.service.DataService;
 import application.service.StatisticsService;
 import application.service.TransactionService;
+import infrastructure.persistence.datasource.DatabaseConnectionFactory;
+import infrastructure.persistence.mapper.TransactionMapper;
 import infrastructure.persistence.repository.FileTransactionRepository;
+import infrastructure.persistence.repository.JdbcTransactionRepository;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
@@ -43,8 +47,11 @@ public class MainView extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        // Initialize repositories, services, and controllers.
-        var repo = new FileTransactionRepository(Path.of("data/transactions.json"));
+//        // Initialize repositories, services, and controllers.
+//
+
+        var factory = new DatabaseConnectionFactory("jdbc:sqlite:data/finance.db");
+        var repo = new JdbcTransactionRepository(factory.createConnection(), new TransactionMapper());
 
         var transactionService = new TransactionService(repo);
         var statisticsService = new StatisticsService(repo);
@@ -64,11 +71,26 @@ public class MainView extends Application {
         // Application header.
         Label title = new Label("Financial Tracker");
         title.setStyle("""
-            -fx-font-size: 22;
-            -fx-font-weight: bold;
-            -fx-text-fill: #1a1a1a;
-            -fx-padding: 20;
-        """);
+    -fx-font-size: 22;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1a1a1a;
+    -fx-padding: 20;
+""");
+
+// logging toggle
+        CheckBox logToggle = new CheckBox("Debug");
+        logToggle.setSelected(util.AppLogger.isEnabled());
+        logToggle.setStyle("-fx-text-fill: #999; -fx-font-size: 12;");
+        logToggle.setOnAction(e -> util.AppLogger.setEnabled(logToggle.isSelected()));
+
+// spacer pushes toggle to the right
+        Region headerSpacer = new Region();
+        HBox.setHgrow(headerSpacer, Priority.ALWAYS);
+
+        HBox header = new HBox();
+        header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        header.getChildren().addAll(title, headerSpacer, logToggle);
+        header.setPadding(new Insets(0, 20, 0, 0));
 
         // Summary cards displaying current financial information.
         SummaryCard balanceCard = new SummaryCard(
@@ -155,12 +177,7 @@ public class MainView extends Application {
         navWrapper.setPadding(new Insets(0, 20, 12, 20));
         navWrapper.getChildren().add(navTabs);
 
-        container.getChildren().addAll(
-                title,
-                cards,
-                navWrapper,
-                contentArea
-        );
+        container.getChildren().addAll(header, cards, navWrapper, contentArea);
 
         // Root application layout.
         BorderPane root = new BorderPane();

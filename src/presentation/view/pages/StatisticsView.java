@@ -74,19 +74,9 @@ public class StatisticsView extends VBox {
      * Data is sorted chronologically before rendering.
      */
     private LineChart<String, Number> buildBalanceChart(Map<YearMonth, Double> data) {
-        CategoryAxis xAxis = new CategoryAxis();
-        xAxis.setLabel("Month");
+        LineChart<String, Number> chart = getStringNumberLineChart();
 
-        NumberAxis yAxis = new NumberAxis();
-        yAxis.setLabel("Balance ($)");
-
-        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
-        chart.setTitle("Balance by Month");
-        chart.setStyle("-fx-background-color: white; -fx-background-radius: 8;");
-        chart.setMinHeight(300);
-        chart.setMaxWidth(Double.MAX_VALUE);
-        chart.setCreateSymbols(true);
-
+        //line balance
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Balance");
 
@@ -105,6 +95,23 @@ public class StatisticsView extends VBox {
         }
 
         chart.getData().add(series);
+        return chart;
+    }
+
+    private static LineChart<String, Number> getStringNumberLineChart() {
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel("Month");
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Balance ($)");
+
+        LineChart<String, Number> chart = new LineChart<>(xAxis, yAxis);
+        chart.setTitle("Balance by Month");
+        chart.setStyle("-fx-background-color: white; -fx-background-radius: 8;");
+        chart.setMinHeight(300);
+        chart.setMaxWidth(Double.MAX_VALUE);
+        //points on chart are turn on
+        chart.setCreateSymbols(true);
         return chart;
     }
 }
